@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 // Import pages
-import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
-import Layout from './components/layouts/Layout';
+import LandingPage from './pages/LandingPage'; // Import LandingPage
+import Layout from './components/layouts/Layout'; // Corrected import path
 import DashboardPage from './pages/DashboardPage';
 import NarrativesPage from './pages/NarrativesPage';
 import ActorsPage from './pages/ActorsPage';
@@ -81,7 +81,7 @@ function App() {
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+      <Route path="/" element={<LandingPage />} /> {/* Changed to LandingPage */}
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       
       {/* Protected routes */}

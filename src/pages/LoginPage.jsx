@@ -43,7 +43,7 @@ const LoginPage = ({ onLogin }) => {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-blue-800">dexter</h1>
           <p className="mt-2 text-sm text-gray-600">
-            A Scalable AI Election Misinformation Detection and Tracking System
+            An AI Powered Election Misinformation Detection and Tracking System
           </p>
         </div>
         
