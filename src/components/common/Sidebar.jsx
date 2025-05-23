@@ -57,37 +57,37 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const navItems = [
     {
       name: 'Dashboard',
-      path: '/dashboard',
+      path: '/app/dashboard',
       icon: <HomeIcon />
     },
     {
       name: 'Narratives',
-      path: '/narratives',
+      path: '/app/narratives',
       icon: <NarrativesIcon />
     },
     {
       name: 'Actors',
-      path: '/actors',
+      path: '/app/actors',
       icon: <ActorsIcon />
     },
     {
       name: 'Timeline',
-      path: '/timeline',
+      path: '/app/timeline',
       icon: <TimelineIcon />
     },
     {
       name: 'Alerts',
-      path: '/alerts',
+      path: '/app/alerts',
       icon: <AlertsIcon />
     },
     {
       name: 'Reports',
-      path: '/reports',
+      path: '/app/reports',
       icon: <ReportsIcon />
     },
     {
       name: 'Settings',
-      path: '/settings',
+      path: '/app/settings',
       icon: <SettingsIcon />
     }
   ];
