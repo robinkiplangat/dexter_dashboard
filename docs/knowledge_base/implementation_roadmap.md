@@ -10,7 +10,7 @@ The implementation of Dexter will follow a phased approach, with each phase buil
 
 **Goal:** Establish the core infrastructure and basic functionality of the platform.
 
-### Sprint 1: Project Setup & Architecture (2 Weeks)
+### Sprint 1: Project Setup & Architecture
 - [x] Create project repository and documentation structure
 - [x] Set up frontend development environment (React, Vite, TailwindCSS)
 - [x] Design system architecture and data models
@@ -18,21 +18,21 @@ The implementation of Dexter will follow a phased approach, with each phase buil
 - [ ] Set up backend development environment (Node.js/Express and FastAPI)
 - [ ] Configure Docker containers for development environment
 
-### Sprint 2: Core Backend Infrastructure (2 Weeks)
+### Sprint 2: Core Backend Infrastructure 
 - [ ] Implement database schemas (PostgreSQL)
 - [ ] Implement user authentication service
 - [ ] Create API gateway with basic routing
 - [ ] Set up development and staging environments
 - [ ] Implement CI/CD pipelines for automated testing and deployment
 
-### Sprint 3: Data Collection Framework (2 Weeks)
+### Sprint 3: Data Collection Framework 
 - [ ] Implement social media API connectors (Twitter/X, Facebook)
 - [ ] Create data collection service with rate limiting and caching
 - [ ] Implement unified data schema for cross-platform analysis
 - [ ] Develop data storage and retrieval mechanisms
 - [ ] Create basic data explorer interface
 
-### Sprint 4: User Management & Dashboard (2 Weeks)
+### Sprint 4: User Management & Dashboard
 - [ ] Implement user management interface (registration, login, profile)
 - [ ] Develop role-based access control system
 - [ ] Create dashboard widgets with real data integration
@@ -147,7 +147,7 @@ The implementation of Dexter will follow a phased approach, with each phase buil
 - [ ] Implement data encryption for sensitive information
 
 ### Phase 3 Deliverables
-- Multilingual support for Nigerian languages
+- Multilingual support 
 - Advanced media analysis capabilities
 - Collaborative workspaces and features
 - Offline functionality for field use

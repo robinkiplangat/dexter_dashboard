@@ -4,7 +4,7 @@
 
 **Date:** May 12, 2025  
 **Project Name:** dexter_platform  
-**Original Requirements:** Build an end-to-end platform Web based and fully optimized for mobile screens with a responsive dashboard for Researchers / election observers to detect and track election misinformation
+**Original Requirements:** End-to-end platform Web based and fully optimized for mobile screens with a responsive dashboard for Researchers / election observers to detect and track election misinformation
 
 ---
 

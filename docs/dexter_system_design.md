@@ -6,7 +6,7 @@ After analyzing the requirements for the Dexter platform, I've identified severa
 
 1. **Multi-platform data collection and analysis**: Dexter must ingest and analyze content from diverse social media platforms (Twitter/X, Facebook, YouTube, TikTok, Telegram, WhatsApp) with varying APIs, rate limits, and data structures.
 
-2. **Multi-lingual processing**: The system must effectively process content in English, Pidgin, Hausa, Yoruba, and Igbo, requiring specialized NLP capabilities.
+2. **Multi-lingual processing**: The system must effectively process content and requirers specialized NLP capabilities.
 
 3. **Scalable real-time analysis**: During election periods, data volume will increase significantly, requiring on-demand scaling while maintaining performance.
 
