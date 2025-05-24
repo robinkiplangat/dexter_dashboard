@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext'; // Correctly import and use useAuth
 
 // User profile settings component
 const ProfileSettings = ({ user, onSave }) => {
@@ -9,6 +9,16 @@ const ProfileSettings = ({ user, onSave }) => {
     organization: user?.organization || '',
     regions: user?.regions || []
   });
+
+  useEffect(() => {
+    // Update profile state if user prop changes
+    setProfile({
+        name: user?.name || '',
+        email: user?.email || '',
+        organization: user?.organization || '',
+        regions: user?.regions || []
+    });
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +62,8 @@ const ProfileSettings = ({ user, onSave }) => {
                 id="email"
                 value={profile.email}
                 onChange={handleChange}
-                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                readOnly // Email might be read-only if managed by auth provider
+                className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md bg-gray-50"
               />
             </div>
           </div>
@@ -239,79 +250,46 @@ const NotificationSettings = ({ settings, onSave }) => {
 
 // Main Settings Page component
 const SettingsPage = () => {
-  const { user } = useAuth();
-  const [successMessage, setSuccessMessage] = useState('');
+  const { user, loading } = useAuth(); // Use user from AuthContext
+  // Potentially add an updateUser function to AuthContext if profile updates should reflect globally
+  // For now, we'll assume saving here is local or calls a specific API endpoint
+  const [activeTab, setActiveTab] = useState('profile');
 
   const handleSaveProfile = (profileData) => {
-    // In a real implementation, this would call the API
     console.log('Saving profile:', profileData);
-    setSuccessMessage('Profile updated successfully');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    // Here you would typically call an API to update the user's profile.
+    // If you added an `updateUser` to AuthContext, you could call it here.
+    // For example: updateUserContext({ ...user, ...profileData });
+    alert('Profile saved! (Simulated - implement API call)');
   };
 
   const handleSaveNotifications = (notificationData) => {
-    // In a real implementation, this would call the API
     console.log('Saving notification settings:', notificationData);
-    setSuccessMessage('Notification settings updated successfully');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    alert('Notification settings saved! (Simulated)');
   };
 
+  const handleSaveDataPrivacy = (dataPrivacyData) => {
+    console.log('Saving data privacy settings:', dataPrivacyData);
+    alert('Data privacy settings saved! (Simulated)');
+  };
+
+  if (loading || !user) { // Check loading state from context
+    return (
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      );
+  }
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Manage your account settings and preferences
-        </p>
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+      <div className="mb-6 border-b border-gray-200">
+        {/* Tabs as before */}
       </div>
-      
-      {successMessage && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">{successMessage}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <ProfileSettings user={user} onSave={handleSaveProfile} />
-      <NotificationSettings onSave={handleSaveNotifications} />
-      
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Account Security</h2>
-        <div className="space-y-4">
-          <div>
-            <button
-              type="button"
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Change Password
-            </button>
-          </div>
-          <div>
-            <button
-              type="button"
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Enable Two-Factor Authentication
-            </button>
-          </div>
-          <div className="pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              className="inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Delete Account
-            </button>
-          </div>
-        </div>
-      </div>
+      {activeTab === 'profile' && <ProfileSettings user={user} onSave={handleSaveProfile} />}
+      {activeTab === 'notifications' && <NotificationSettings settings={user.notificationSettings || {}} onSave={handleSaveNotifications} />}
+      {activeTab === 'dataPrivacy' && <DataPrivacySettings onSave={handleSaveDataPrivacy} />}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Layout from '../components/layouts/Layout';
+// import Layout from '../components/layouts/Layout'; // Remove this line
 
 const NarrativesPage = () => {
   const [selectedNarrative, setSelectedNarrative] = useState(null);
@@ -110,14 +110,14 @@ const NarrativesPage = () => {
   });
 
   return (
-    <Layout>
+    <div className="narratives-container"> {/* Add this wrapper div */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Narratives</h1>
         <p className="mt-1 text-sm text-gray-500">
           Track and analyze misinformation themes across platforms
         </p>
       </div>
-
+    
       {/* Filters and search bar */}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="col-span-1 md:col-span-2">
@@ -339,7 +339,8 @@ const NarrativesPage = () => {
           )}
         </div>
       </div>
-    </Layout>
+    {/* Close the wrapper div */}
+    </div>
   );
 };
 
