@@ -103,11 +103,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         ></div>
       )}
       
-      {/* Sidebar for mobile (off-canvas) */}
+      {/* Sidebar for mobile and desktop with responsive width */}
       <div 
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-blue-900 transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-30 transform bg-blue-900 transition duration-300 ease-in-out 
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+          lg:translate-x-0 lg:static lg:inset-0 
+          w-64 lg:w-auto lg:flex-shrink-0 lg:w-[220px] xl:w-64 
+          ${location.pathname.includes('/reports') ? 'lg:w-[180px]' : ''}`}
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-center h-16 px-4 bg-blue-800 text-white">
@@ -129,19 +131,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 px-2 py-4 space-y-1">
+        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${
-                location.pathname === item.path 
-                  ? 'bg-blue-800 text-white' 
-                  : 'text-gray-300 hover:bg-blue-800 hover:text-white'
-              }`}
+              className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors ${location.pathname === item.path ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white'}`}
             >
               <span className="mr-3">{item.icon}</span>
-              {item.name}
+              <span className="lg:block">{item.name}</span>
             </Link>
           ))}
           
@@ -154,7 +152,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             className="flex w-full items-center px-4 py-3 mt-auto text-sm font-medium text-gray-300 rounded-md hover:bg-blue-800 hover:text-white transition-colors"
           >
             <span className="mr-3"><LogoutIcon /></span>
-            Logout
+            <span className="lg:block">Logout</span>
           </button>
         </nav>
       </div>
