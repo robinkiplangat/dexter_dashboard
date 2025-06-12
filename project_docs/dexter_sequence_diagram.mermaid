@@ -1,0 +1,168 @@
+sequenceDiagram
+    participant Client as Web/Mobile Client
+    participant API as API Gateway
+    participant Auth as Auth Service
+    participant DataCol as Data Collection Service
+    participant Content as Content Processing Service
+    participant NarrDet as Narrative Detection Service
+    participant ActorAn as Actor Analysis Service
+    participant AlertSvc as Alert Service
+    participant NotifSvc as Notification Service
+    participant DB as Database Services
+    participant ML as ML Model Service
+    participant Analytics as Analytics Service
+    participant Storage as Storage Service
+
+    %% User Authentication Flow
+    Client->>API: POST /auth/login (email, password)
+    API->>Auth: authenticateUser(email, password)
+    Auth->>DB: verifyCredentials(email, password)
+    DB-->>Auth: userData
+    Auth->>Auth: generateToken(userId)
+    Auth-->>API: authToken + userData
+    API-->>Client: 200 OK (token, userData)
+
+    %% Data Collection Flow
+    loop Scheduled Collection
+        DataCol->>DataCol: triggerScheduledCollection()
+        DataCol->>API: checkAPICredentials()
+        API-->>DataCol: credentials valid
+        DataCol->>DataCol: collectData(platforms, parameters)
+        loop For each Platform
+            DataCol->>APIClient: fetchData(parameters)
+            APIClient-->>DataCol: rawContentData
+            DataCol->>Storage: storeRawContent(rawContentData)
+            Storage-->>DataCol: storageConfirmation
+            DataCol->>Content: processNewContent(rawContentId)
+            Content->>Storage: retrieveRawContent(rawContentId)
+            Storage-->>Content: rawContentData
+            Content->>Content: parseContent(rawContentData)
+            Content->>Content: extractMetadata()
+            Content->>Content: sanitizeContent()
+            Content->>ML: extractEntities(contentText)
+            ML-->>Content: entities
+            Content->>DB: saveProcessedContent(contentObject)
+            DB-->>Content: contentId
+            Content->>NarrDet: classifyContent(contentId)
+        end
+    end
+
+    %% Narrative Detection Flow
+    NarrDet->>DB: retrieveContent(contentId)
+    DB-->>NarrDet: contentData
+    NarrDet->>ML: classifyNarrative(contentData)
+    ML->>DB: getLexicons(languages)
+    DB-->>ML: lexiconData
+    ML->>ML: applyNarrativeModels(contentData, lexicons)
+    ML-->>NarrDet: narrativeClassifications(scores)
+    NarrDet->>DB: getExistingNarratives()
+    DB-->>NarrDet: existingNarratives
+    NarrDet->>NarrDet: matchOrCreateNarrative(classifications)
+    NarrDet->>DB: updateContentWithNarratives(contentId, narrativeIds)
+    DB-->>NarrDet: updateConfirmation
+    NarrDet->>AlertSvc: checkForAlerts(contentId, narrativeIds)
+
+    %% Actor Analysis Flow
+    ActorAn->>DB: getNewContent(timeframe)
+    DB-->>ActorAn: contentList
+    ActorAn->>ActorAn: extractActors(contentList)
+    loop For each Actor
+        ActorAn->>DB: checkExistingActor(platformId)
+        DB-->>ActorAn: existingActorData
+        alt New Actor
+            ActorAn->>DB: createActor(actorData)
+            DB-->>ActorAn: actorId
+        else Existing Actor
+            ActorAn->>DB: updateActor(actorId, newData)
+            DB-->>ActorAn: updateConfirmation
+        end
+    end
+    ActorAn->>ML: analyzeInfluence(actorIds)
+    ML-->>ActorAn: influenceScores
+    ActorAn->>DB: updateInfluenceScores(actorScores)
+    DB-->>ActorAn: updateConfirmation
+    ActorAn->>ML: detectCoordinatedBehavior(actorIds)
+    ML-->>ActorAn: coordinationResults
+    ActorAn->>ActorAn: analyzeCoordination(coordinationResults)
+    ActorAn->>DB: updateNetworks(networkUpdates)
+    DB-->>ActorAn: updateConfirmation
+    ActorAn->>AlertSvc: checkForActorAlerts(actorIds, networkIds)
+
+    %% Alert Generation Flow
+    AlertSvc->>AlertSvc: processAlertTriggers(triggerId)
+    AlertSvc->>DB: getAlertConfig()
+    DB-->>AlertSvc: alertConfigurationData
+    AlertSvc->>DB: getRelevantData(triggerParams)
+    DB-->>AlertSvc: relevantData
+    AlertSvc->>AlertSvc: evaluateAlertConditions(data, config)
+    alt Alert Triggered
+        AlertSvc->>DB: createAlert(alertData)
+        DB-->>AlertSvc: alertId
+        AlertSvc->>NotifSvc: sendAlertNotification(alertId, recipients)
+        NotifSvc->>NotifSvc: formatNotification(alertData)
+        NotifSvc->>DB: getUserPreferences(userIds)
+        DB-->>NotifSvc: userPreferences
+        loop For each User
+            NotifSvc->>NotifSvc: selectChannels(userId, preferences)
+            NotifSvc->>Client: pushNotification(userId, message)
+            NotifSvc->>External: sendEmail/SMS(userId, message)
+        end
+    end
+
+    %% Dashboard Data Request Flow
+    Client->>API: GET /dashboard/{dashboardId}
+    API->>Auth: validateToken(token)
+    Auth-->>API: tokenValid
+    API->>DB: getDashboardConfig(dashboardId)
+    DB-->>API: dashboardConfig
+    API->>DB: getUserPermissions(userId, dashboardId)
+    DB-->>API: permissions
+    API->>Analytics: getDashboardData(dashboardId, widgets, filters)
+    loop For each Widget
+        Analytics->>DB: queryWidgetData(widgetConfig, filters)
+        DB-->>Analytics: rawData
+        Analytics->>Analytics: processWidgetData(rawData)
+        Analytics-->>API: widgetProcessedData
+    end
+    API-->>Client: dashboardData
+
+    %% Report Generation Flow
+    Client->>API: POST /reports/generate
+    API->>Auth: validateToken(token)
+    Auth-->>API: tokenValid
+    API->>DB: getReportTemplate(reportType)
+    DB-->>API: reportTemplate
+    API->>Analytics: generateReport(template, parameters)
+    Analytics->>DB: queryReportData(parameters)
+    DB-->>Analytics: reportData
+    Analytics->>Analytics: processReportData(reportData)
+    Analytics->>Storage: storeReport(processedReport)
+    Storage-->>Analytics: reportUrl
+    Analytics-->>API: reportMetadata
+    API-->>Client: reportMetadata
+    Client->>API: GET /reports/{reportId}/download
+    API->>Storage: getReport(reportId)
+    Storage-->>API: reportFile
+    API-->>Client: reportFile
+
+    %% Narrative Trend Analysis Flow
+    Client->>API: GET /analytics/narratives/trends
+    API->>Auth: validateToken(token)
+    Auth-->>API: tokenValid
+    API->>Analytics: getNarrativeTrends(parameters)
+    Analytics->>DB: queryNarrativeData(parameters)
+    DB-->>Analytics: narrativeData
+    Analytics->>Analytics: processTrendData(narrativeData)
+    Analytics-->>API: processedTrends
+    API-->>Client: trendData
+
+    %% Model Training Flow
+    ML->>DB: getTrainingData(modelType, parameters)
+    DB-->>ML: trainingData
+    ML->>ML: preprocessData(trainingData)
+    ML->>ML: trainModel(processedData, hyperparameters)
+    ML->>ML: evaluateModel(model, testData)
+    ML->>Storage: saveModel(modelId, modelData)
+    Storage-->>ML: saveConfirmation
+    ML->>DB: updateModelMetadata(modelId, performance)
+    DB-->>ML: updateConfirmation
